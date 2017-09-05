@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name ="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta property="qc:admins" content="251034410766174610006636" />
+    <meta property="wb:webmaster" content="98f31a051ed51991" />
+    <meta name="applicable-device" content="pc">
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <title>Crop-image</title>
+    <link href="htmlx_img_editor.css" rel="stylesheet" />
+    <style>
+        #container{
+            width: 500px;
+            height: 500px;
+            border: 1px solid deeppink;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script src="jquery.1.12.5.min.js"></script>
+    <script>
+        window.IOT = {};
+    </script>
+    <script src="dist/image_crop.js"></script>
+    <script>
+        new ImageCrop({
+          container: document.getElementById('container'),
+          cropFrame: { //裁剪框
+              initialSize: { //裁剪框的初始大小，设置为auto或不设置则自动设置大小
+                  width: 10,
+                  height: 10
+              },
+              resize: { //裁剪框的缩放配置
+                  enable: false, //是否允许缩放，默认true
+                  ratio: 100 //缩放时长宽比，设置为auto则不限制缩放的长宽比，默认1
+              }
+          }
+        });
+    </script>
+</body>
+</html>

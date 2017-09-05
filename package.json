@@ -1,0 +1,28 @@
+{
+  "name": "crop-image",
+  "version": "1.0.0",
+  "description": "crop image by canvas and return a new cropped file with base64 or blob",
+  "main": "crop.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-debug": "browserify src/crop_image.js -s ImageCrop -t [babelify] -p [less-modulesify] -o dist/image_crop.js",
+    "build-min": "uglifyjs dist/image-crop.js -s ImageCrop -o dist/image-crop.min.js"
+  },
+  "keywords": [
+    "crop",
+    "image",
+    "uploader"
+  ],
+  "author": "libmw",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "less-modulesify": "^1.1.3"
+  },
+  "dependencies": {
+    "deep-assign": "^2.0.0",
+    "tiny-emitter": "^2.0.2"
+  }
+}
