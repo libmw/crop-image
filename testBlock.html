@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        /*input {*/
+            /*position: absolute;*/
+            /*left: 520px;*/
+        /*}*/
+        canvas {
+            border: 1px solid black;
+            /*background: #e2e2e2;*/
+        }
+        .wrapper {
+            position: relative;
+        }
+        .po {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            margin: -2px 0 0 -2px;
+            background: rgba(255, 255, 255, .8);
+        }
+        .po.c-1 {
+            left: 20px;
+            top: 30px;
+            cursor: nw-resize;
+        }
+        .po.c-2 {
+            left: 20px;
+            top: 130px;
+            cursor: sw-resize;
+        }
+        .po.c-3 {
+            left: 120px;
+            top: 30px;
+            cursor: ne-resize;
+        }
+        .po.c-4 {
+            left: 120px;
+            top: 130px;
+            cursor: se-resize;
+        }
+        .po.c-block {
+            left: 20px;
+            top: 30px;
+            width: 100px;
+            height: 100px;
+            cursor: move;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <canvas id="test" width="500" height="500"></canvas>
+    <ul id="po">
+        <div class="po c-1"></div>
+        <div class="po c-2"></div>
+        <div class="po c-3"></div>
+        <div class="po c-4"></div>
+        <!--<div class="po c-block"></div>-->
+    </ul>
+</div>
+<input type="file" name="file" onchange="imgPreview(this)" />
+<script type="text/javascript">
+    var imgSrc = '';
+    function imgPreview(fileDom) {
+        var reader;
+        if (window.FileReader) {
+            reader = new FileReader();
+        } else {
+            console.log('Not support!');
+        }
+        var file = fileDom.files[0];
+        var imageType = /^image\//;
+        if (!imageType.test(file.type)) {
+            alert('请选择一张图片!');
+            return;
+        }
+        reader.onload = function (e) {
+//            console.log(e.target.result);
+            imgSrc = e.target.result;
+            test();
+        };
+        reader.readAsDataURL(file);
+    }
+    function test() {
+        var canvas = document.getElementById("test");
+        var ctx = canvas.getContext("2d");
+//        ctx.fillStyle = 'rgba(255, 255, 255, 0)';
+        ctx.fillStyle = '#e2e2e2';
+        ctx.strokeStyle = 'white';
+        ctx.fillRect(0, 0, 500, 500);
+
+//        var es = document.getElementById('po');
+//        es.onmousedwon = function (e) {
+//            var el = e || window.event;
+//            var target = el.target || el.srcElement;
+//            console.log('target: ' + target);
+//
+//        };
+//        $('.po').on('mousedown', function (e) {
+//            var thiz = $(this);
+//            console.log();
+//            thiz.off('mousemove').on('mousemove', function (ev) {
+//                console.log(thiz.attr('class') + 'x: ' + ev.x);
+//                console.log(thiz.attr('class') + 'y: ' + ev.y);
+//            });
+//        });
+
+        var addEvent = function (el, event, cb) {
+            if (el.addEventListener) {
+                el.addEventListener(event, cb);
+            } else if (el.attachEvent) {
+                el.attachEvent(event, cb);
+            }
+            return cb;
+        };
+        var cancelEvent = function(el, event, cb){
+            if (el.removeEventListener) {
+                el.removeEventListener(event, cb);
+            } else if (el.detachEvent) {
+                el.detachEvent('on' + event, cb)
+            }
+        };
+        function getPosition (e) {
+            e = e || window.event;
+            var target = e.target ? e.target : e.srcElement;
+
+            var pos_rel = {};
+            var pos_offset = {};
+            pos_rel = {
+                x: e.pageX ? e.pageX : e.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft),
+                y: e.pageY ? e.pageY : e.clientY + (document.body.scrollTop || document.documentElement.scrollTop)
+            };
+            pos_offset = {
+                x: e.offsetX ? e.offsetX : e.layerX,
+                y: e.offsetY ? e.offsetY : e.layerY
+            };
+            return {
+                rel: pos_rel,
+                offset: pos_offset
+            }
+        }
+        var es = document.getElementsByClassName('po');
+        var esPos;
+        var img = new Image();
+
+        var setDefault = function () {
+            esPos = {
+                'lt': {
+                    x: 20,
+                    y: 30
+                },
+                'ld': {
+                    x: 20,
+                    y: 130
+                },
+                'rt': {
+                    x: 120,
+                    y: 30
+                },
+                'rd': {
+                    x: 120,
+                    y: 130
+                },
+                'block': {
+                    x: 20,
+                    y: 30,
+                    width: 100,
+                    height: 100
+                }
+            };
+
+        };
+
+        var renderImg = function() {
+            img.onload = function () {
+                console.log(1);
+                ctx.clearRect(0, 0, 500, 500);
+                setDefault();
+                ctx.drawImage(img, 0, 0);
+                ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+                ctx.fillRect(0, 0, 500, 500);
+                renderMap();
+            };
+            img.src = imgSrc;
+        };
+        var renderMap = function () {
+            ctx.drawImage(img, 0, 0);
+            ctx.fillStyle = 'rgba(0, 0, 0, .7)';
+            // 画四个拼图,模拟图形高亮
+            ctx.fillRect(0, 0, 500, esPos.lt.y); // 上
+            ctx.fillRect(0, esPos.ld.y, 500, 500 - esPos.ld.y); // 下
+            ctx.fillRect(0, esPos.lt.y, esPos.lt.x, esPos.ld.y - esPos.lt.y); // 左
+            ctx.fillRect(esPos.rt.x, esPos.rt.y, 500 - esPos.rt.x, esPos.rd.y - esPos.rt.y); // 右
+
+//            ctx.fillRect(esPos.lt.x, esPos.lt.y, esPos.rt.x - esPos.lt.x, esPos.ld.y - esPos.lt.y);
+//            ctx.clearStyle = 'rgba(255, 255, 255, 0)';
+            ctx.strokeRect(esPos.lt.x, esPos.lt.y, esPos.rt.x - esPos.lt.x, esPos.ld.y - esPos.lt.y);
+//            ctx.clearRect(esPos.lt.x, esPos.lt.y, esPos.rt.x - esPos.lt.x, esPos.ld.y - esPos.lt.y);
+            ctx.beginPath();
+            ctx.arc(esPos.lt.x, esPos.lt.y, 3, 0, Math.PI * 2, false);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(esPos.ld.x, esPos.ld.y, 3, 0, Math.PI * 2, false);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(esPos.rt.x, esPos.rt.y, 3, 0, Math.PI * 2, false);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(esPos.rd.x, esPos.rd.y, 3, 0, Math.PI * 2, false);
+            ctx.stroke();
+        };
+        renderImg();
+
+        for (var i = 0, size = es.length; i < size; i++) {
+//            console.log(es[i]);
+            (function(i){
+                var isDrag = false, efx, efy;
+                var item = es[i];
+                addEvent(item, 'mousedown', function (e) {
+//                console.log('mousedown');
+                    isDrag = true;
+                    efx = getPosition().offset.x;
+                    efy = getPosition().offset.y;
+                });
+                addEvent(document, 'mousemove', function (e) {
+//                    console.log('obj: => ' + e);
+                    if (isDrag) {
+                        var relX = getPosition().rel.x - efx;
+                        var relY = getPosition().rel.y - efy;
+                        item.style.left = relX + 'px';
+                        item.style.top = relY + 'px';
+                        switch (i) {
+                            case 0: {
+                                esPos.lt.x = relX;
+                                esPos.lt.y = relY;
+                                esPos.ld.x = relX;
+                                esPos.rt.y = relY;
+                                es[1].style.left = relX + 'px';
+                                es[2].style.top = relY + 'px';
+                            } break;
+                            case 1: {
+                                esPos.ld.x = relX;
+                                esPos.ld.y = relY;
+                                esPos.lt.x = relX;
+                                esPos.rd.y = relY;
+                                es[0].style.left = relX + 'px';
+                                es[3].style.top = relY + 'px';
+                            } break;
+                            case 2: {
+                                esPos.rt.x = relX;
+                                esPos.rt.y = relY;
+                                esPos.rd.x = relX;
+                                esPos.lt.y = relY;
+                                es[3].style.left = relX + 'px';
+                                es[0].style.top = relY + 'px';
+                            } break;
+                            case 3: {
+                                esPos.rd.x = relX;
+                                esPos.rd.y = relY;
+                                esPos.rt.x = relX;
+                                esPos.ld.y = relY;
+                                es[2].style.left = relX + 'px';
+                                es[1].style.top = relY + 'px';
+                            } break;
+                            case 4: {
+
+                            } break;
+                        }
+//                        console.log(esPos);
+                        setTimeout(function () {
+                            canvas.height = canvas.height; // 让canvas对画布进行重绘
+                            ctx.fillStyle = '#e2e2e2';
+                            ctx.strokeStyle = 'white';
+                            ctx.fillRect(0, 0, 500, 500);
+                            ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+                            ctx.fillRect(0, 0, 500, 500);
+//                            console.log(esPos.lt.x+', '+esPos.lt.y+', '+(esPos.rt.x - esPos.lt.x)+', '+(esPos.ld.y - esPos.lt.y));
+                            renderMap();
+                        }, 50);
+//
+//                        console.log('item x: ' + item.style.left);
+//                        console.log('item y: ' + item.style.top);
+                    }
+                });
+                addEvent(document, 'mouseup', function (e) {
+//                    console.log('mouseup');
+                    isDrag = false;
+                });
+            })(i);
+        }
+//        es.forEach(function (value, index, array) {
+//            console.log(value+', '+index+', '+array);
+//        });
+    }
+
+</script>
+</body>
+</html>
