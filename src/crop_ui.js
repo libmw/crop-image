@@ -49,6 +49,7 @@ class CropUi extends Emitter{
             +'<div class="resize-btn r-s"></div>'
             +'<div class="crop-tools"><div class="ci-btn-up"><i class="ci-btn-up-arrow"></i><i class="ci-btn-up-bd"></i></div><div class="ci-btn-cancel">X</div></div>'; //裁剪框
         this._options.container.appendChild(cropFrameCtn);
+        var cropFrameBlock = undefined;
     }
 
     _buildMask(){

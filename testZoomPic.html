@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Zoom Picture</title>
+    <style>
+        * {
+            padding:0;
+            margin:0;
+        }
+        .wrapper {
+            position: relative;
+        }
+        #w-default {
+            position: absolute;
+            z-index: 0;
+        }
+        #w-mask {
+            position: absolute;
+            z-index: 1;
+        }
+        input {
+            margin-top: 500px;
+        }
+    </style>
+</head>
+<body onload="javascript:;">
+
+<div class="tools">
+    <button class="t-round" onclick="cover('round')">Round</button>
+    <button class="t-rect" onclick="cover('rect')">Rect</button>
+</div>
+<div class="wrapper">
+    <canvas id="w-default" width="500" height="500"></canvas>
+    <canvas id="w-mask" width="500" height="500"></canvas>
+</div>
+
+<input type="file" name="file" onchange="imgPreview(this)" />
+
+<script type="text/javascript">
+
+    var imgSrc = '';
+    function imgPreview(fileDom) {
+        var reader;
+        if (window.FileReader) {
+            reader = new FileReader();
+        } else {
+            console.log('Not support!');
+        }
+        var file = fileDom.files[0];
+        var imageType = /^image\//;
+        if (!imageType.test(file.type)) {
+            alert('请选择一张图片!');
+            return;
+        }
+        reader.onload = function (e) {
+//            console.log(e.target.result);
+            imgSrc = e.target.result;
+            test();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function test() {
+        var canvas = document.getElementById("w-default");
+        var ctx = canvas.getContext("2d");
+        var img = new Image();
+        var renderImg = function() {
+            img.onload = function () {
+                ctx.scale(2,2);
+                ctx.clearRect(0, 0, 500, 500);
+                ctx.drawImage(img, 0, 0);
+
+//                ctx.fillStyle = 'rgba(0, 0, 0, .5)';
+//                ctx.fillRect(0, 0, 500, 500);
+//                ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+//                ctx.clearRect(30, 30, 100, 100);
+            };
+            img.src = imgSrc;
+        };
+        renderImg();
+    }
+
+    function zoom() {
+        
+    }
+    
+    function cover(type) {
+        var ctxMask = document.getElementById('w-mask').getContext('2d');
+        var executeCover = function () {
+            ctxMask.clearRect(0, 0, 500, 500);
+            ctxMask.fillStyle = 'rgba(0,0,0,.5)';
+            ctxMask.fillRect(0, 0, 500, 500);
+        };
+        var bindEvents = function () {
+            // get the relevant
+        };
+
+        switch (type) {
+            case 'round': {
+                executeCover();
+//                ctxMask.fillStyle = 'rgba(0,0,0,0)';
+                ctxMask.clearRect(150, 150, 200, 200);
+            } break;
+            case 'rect': {
+                executeCover();
+//                ctxMask.fillStyle = 'rgba(0,0,0,0)';
+                ctxMask.clearRect(100, 100, 300, 300);
+                bindEvents();
+            } break;
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
